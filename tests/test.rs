@@ -6,33 +6,24 @@ fn tokenizer_works() {
 
     let tokens = vec![
         Token::ParenOpening,
-        Token::ParenClosing,
-        Token::ParenClosing,
-        Token::ParenClosing,
-        Token::ParenClosing,
-        Token::ParenClosing,
-        Token::ParenClosing,
+        Token::Unknown,
+        Token::Unknown,
+        Token::Unknown,
+        Token::Number("2".to_string()),
         Token::ParenOpening,
-        Token::ParenClosing,
-        Token::ParenClosing,
-        Token::ParenClosing,
-        Token::ParenClosing,
-        Token::ParenClosing,
-        Token::ParenClosing,
-        Token::ParenClosing,
-        Token::ParenClosing,
-        Token::ParenClosing,
-        Token::ParenClosing,
-        Token::ParenClosing,
-        Token::ParenClosing,
+        Token::Unknown,
+        Token::Unknown,
+        Token::Unknown,
+        Token::Unknown,
+        Token::Unknown,
+        Token::Unknown,
+        Token::Unknown,
+        Token::Unknown,
+        Token::Number("4".to_string()),
+        Token::Number("2".to_string()),
         Token::ParenClosing,
         Token::ParenClosing,
     ];
 
-    let tokenized_input = tokenizer(input);
-
-    assert_eq!(tokens.len(), tokenized_input.len());
-    for (i, token) in tokens.iter().enumerate() {
-        assert_eq!(*token, tokenized_input[i]);
-    }
+    assert_eq!(tokens, tokenizer(input));
 }
