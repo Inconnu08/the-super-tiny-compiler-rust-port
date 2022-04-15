@@ -4,7 +4,7 @@ use the_super_tiny_compiler_rust_port::tokenizer::{tokenizer, Token};
 fn tokenizer_works() {
     let input = "(add 22 \"ff\" (subtract 4 2))";
 
-    let tokens = vec![
+    let expected_tokens = vec![
         Token::ParenOpening,
         Token::Name("add".to_string()),
         Token::Number("22".to_string()),
@@ -17,5 +17,5 @@ fn tokenizer_works() {
         Token::ParenClosing,
     ];
 
-    assert_eq!(tokens, tokenizer(input));
+    assert_eq!(Ok(expected_tokens), tokenizer(input));
 }

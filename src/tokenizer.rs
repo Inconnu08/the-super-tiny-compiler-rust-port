@@ -8,7 +8,7 @@ pub enum Token {
     Unknown,
 }
 
-pub fn tokenizer(input: &str) -> Vec<Token> {
+pub fn tokenizer(input: &str) -> Result<Vec<Token>, String> {
     let mut tokens: Vec<Token> = vec![];
 
     let mut char_iter = input.chars().peekable();
@@ -65,9 +65,9 @@ pub fn tokenizer(input: &str) -> Vec<Token> {
 
                 tokens.push(Token::String(value));
             }
-            _ => tokens.push(Token::Unknown),
+            _ => return Err(format!("unknown character: {}", ch)),
         }
     }
 
-    tokens
+    Ok(tokens)
 }
