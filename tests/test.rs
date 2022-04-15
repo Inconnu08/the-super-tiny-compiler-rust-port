@@ -2,23 +2,15 @@ use the_super_tiny_compiler_rust_port::tokenizer::{tokenizer, Token};
 
 #[test]
 fn tokenizer_works() {
-    let input = "(add 2 (subtract 4 2))";
+    let input = "(add 22 \"ff\" (subtract 4 2))";
 
     let tokens = vec![
         Token::ParenOpening,
-        Token::Unknown,
-        Token::Unknown,
-        Token::Unknown,
-        Token::Number("2".to_string()),
+        Token::Name("add".to_string()),
+        Token::Number("22".to_string()),
+        Token::String("ff".to_string()),
         Token::ParenOpening,
-        Token::Unknown,
-        Token::Unknown,
-        Token::Unknown,
-        Token::Unknown,
-        Token::Unknown,
-        Token::Unknown,
-        Token::Unknown,
-        Token::Unknown,
+        Token::Name("subtract".to_string()),
         Token::Number("4".to_string()),
         Token::Number("2".to_string()),
         Token::ParenClosing,
