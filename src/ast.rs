@@ -19,8 +19,8 @@ pub enum Node {
 pub fn parser(tokens: Vec<Token>) -> Result<Node, String> {
     fn walk(token: Token, token_iter: &mut Peekable<IntoIter<Token>>) -> Result<Node, String> {
         match token {
-            Token::Number(ref value) => Ok(Node::NumberLiteral(value.to_string())),
-            Token::String(ref value) => Ok(Node::StringLiteral(value.to_string())),
+            Token::Number(value) => Ok(Node::NumberLiteral(value.to_string())),
+            Token::String(value) => Ok(Node::StringLiteral(value.to_string())),
             Token::ParenOpening => {
                 if let Some(token) = token_iter.next() {
                     match token {

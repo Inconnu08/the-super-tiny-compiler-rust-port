@@ -22,27 +22,18 @@ pub fn tokenizer(input: &str) -> Result<Vec<Token>, String> {
                 let mut value = String::new();
                 value.push(ch);
 
-                while match char_iter.peek() {
-                    Some('0'..='9') => true,
-                    _ => false,
-                } {
-                    if let Some(ch) = char_iter.next() {
-                        value.push(ch);
-                    }
+                while let Some('0'..='9') = char_iter.peek() {
+                    value.push(char_iter.next().unwrap());
                 }
+
                 tokens.push(Token::Number(value));
             }
             'a'..='z' => {
                 let mut value = String::new();
                 value.push(ch);
 
-                while match char_iter.peek() {
-                    Some('a'..='z') => true,
-                    _ => false,
-                } {
-                    if let Some(ch) = char_iter.next() {
-                        value.push(ch);
-                    }
+                while let Some('a'..='z') = char_iter.peek() {
+                    value.push(char_iter.next().unwrap());
                 }
 
                 tokens.push(Token::Name(value));
@@ -54,9 +45,7 @@ pub fn tokenizer(input: &str) -> Result<Vec<Token>, String> {
                     Some('"') | None => false,
                     _ => true,
                 } {
-                    if let Some(ch) = char_iter.next() {
-                        value.push(ch);
-                    }
+                    value.push(char_iter.next().unwrap());
                 }
 
                 if char_iter.peek() == Some(&'"') {
