@@ -15,7 +15,7 @@ pub fn tokenizer(input: &str) -> Result<Vec<Token>, String> {
 
     while let Some(ch) = char_iter.next() {
         match ch {
-            ch if ch.is_whitespace() => {}
+            ch if ch.is_whitespace() => continue,
             '(' => tokens.push(Token::ParenOpening),
             ')' => tokens.push(Token::ParenClosing),
             '0'..='9' => {

@@ -1,3 +1,4 @@
+use the_super_tiny_compiler_rust_port::ast::{parser, Node};
 use the_super_tiny_compiler_rust_port::tokenizer::{tokenizer, Token};
 
 #[test]
@@ -18,4 +19,37 @@ fn tokenizer_works() {
     ];
 
     assert_eq!(Ok(expected_tokens), tokenizer(input));
+}
+
+#[test]
+fn parser_works() {
+    let expected_ast = Node::Program {
+        body: vec![Node::CallExpression {
+            identifier: "add".to_string(),
+            params: vec![
+                Node::NumberLiteral("22".to_string()),
+                Node::CallExpression {
+                    identifier: "subtract".to_string(),
+                    params: vec![
+                        Node::NumberLiteral("4".to_string()),
+                        Node::NumberLiteral("2".to_string()),
+                    ],
+                },
+            ],
+        }],
+    };
+
+    let tokens = vec![
+        Token::ParenOpening,
+        Token::Name("add".to_string()),
+        Token::Number("22".to_string()),
+        Token::ParenOpening,
+        Token::Name("subtract".to_string()),
+        Token::Number("4".to_string()),
+        Token::Number("2".to_string()),
+        Token::ParenClosing,
+        Token::ParenClosing,
+    ];
+
+    assert_eq!(Ok(expected_ast), parser(tokens));
 }
