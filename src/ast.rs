@@ -1,8 +1,9 @@
 use crate::tokenizer::Token;
+use std::collections::HashMap;
 use std::iter::Peekable;
 use std::vec::IntoIter;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Hash, Eq, PartialEq)]
 pub enum Node {
     Program {
         body: Vec<Node>,
@@ -14,6 +15,11 @@ pub enum Node {
     StringLiteral(String),
     NumberLiteral(String),
     Unknown,
+}
+
+pub struct Visitor {
+    pub enter: Option<Box<dyn Fn(Node, Option<Node>)>>,
+    pub exit: Option<Box<dyn Fn(Node, Option<Node>)>>,
 }
 
 pub fn parser(tokens: Vec<Token>) -> Result<Node, String> {
@@ -70,4 +76,16 @@ pub fn parser(tokens: Vec<Token>) -> Result<Node, String> {
     }
 
     Ok(Node::Program { body })
+}
+
+pub fn traverser(node: Node, visitors: HashMap<Node, Visitor>) {
+    let traverse_node = |node: Node, parent: Option<Node>| {
+        if let Some(visitor) = visitors.get(&node) {
+            if let Some(ref enter) = visitor.enter {
+                enter(node, parent);
+            }
+        }
+    };
+
+    traverse_node(node, None);
 }

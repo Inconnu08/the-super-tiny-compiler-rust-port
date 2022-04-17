@@ -1,4 +1,5 @@
-use the_super_tiny_compiler_rust_port::ast::{parser, Node};
+use std::collections::HashMap;
+use the_super_tiny_compiler_rust_port::ast::{parser, traverser, Node, Visitor};
 use the_super_tiny_compiler_rust_port::tokenizer::{tokenizer, Token};
 
 #[test]
@@ -51,5 +52,31 @@ fn parser_works() {
         Token::ParenClosing,
     ];
 
-    assert_eq!(Ok(expected_ast), parser(tokens));
+    assert_eq!(Ok(expected_ast), parser(tokens.clone()));
+
+    let mut visitors = HashMap::new();
+    visitors.insert(
+        Node::Program {
+            body: vec![Node::CallExpression {
+                identifier: "add".to_string(),
+                params: vec![
+                    Node::NumberLiteral("22".to_string()),
+                    Node::CallExpression {
+                        identifier: "subtract".to_string(),
+                        params: vec![
+                            Node::NumberLiteral("4".to_string()),
+                            Node::NumberLiteral("2".to_string()),
+                        ],
+                    },
+                ],
+            }],
+        },
+        Visitor {
+            enter: Some(Box::new(move |node: Node, parent: Option<Node>| {
+                println!("test works!")
+            })),
+            exit: None,
+        },
+    );
+    traverser(parser(tokens.clone()).unwrap(), visitors);
 }
