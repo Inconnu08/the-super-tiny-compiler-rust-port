@@ -4,6 +4,14 @@ use std::iter::Peekable;
 use std::vec::IntoIter;
 
 #[derive(Debug, Hash, Eq, PartialEq)]
+pub enum NodeType {
+    Program,
+    CallExpression,
+    StringLiteral,
+    NumberLiteral,
+}
+
+#[derive(Debug, PartialEq)]
 pub enum Node {
     Program {
         body: Vec<Node>,
@@ -14,12 +22,22 @@ pub enum Node {
     },
     StringLiteral(String),
     NumberLiteral(String),
-    Unknown,
+}
+
+impl Node {
+    fn get_type(&self) -> NodeType {
+        match *self {
+            Node::Program { .. } => NodeType::Program,
+            Node::CallExpression { .. } => NodeType::CallExpression,
+            Node::StringLiteral(_) => NodeType::StringLiteral,
+            Node::NumberLiteral(_) => NodeType::NumberLiteral,
+        }
+    }
 }
 
 pub struct Visitor {
-    pub enter: Option<Box<dyn Fn(Node, Option<Node>)>>,
-    pub exit: Option<Box<dyn Fn(Node, Option<Node>)>>,
+    pub enter: Option<Box<dyn Fn(&Node, Option<&Node>)>>,
+    pub exit: Option<Box<dyn Fn(&Node, Option<&Node>)>>,
 }
 
 pub fn parser(tokens: Vec<Token>) -> Result<Node, String> {
@@ -78,14 +96,38 @@ pub fn parser(tokens: Vec<Token>) -> Result<Node, String> {
     Ok(Node::Program { body })
 }
 
-pub fn traverser(node: Node, visitors: HashMap<Node, Visitor>) {
-    let traverse_node = |node: Node, parent: Option<Node>| {
-        if let Some(visitor) = visitors.get(&node) {
-            if let Some(ref enter) = visitor.enter {
-                enter(node, parent);
+pub fn traverser(node: Node, visitors: HashMap<NodeType, Visitor>) {
+    fn traverse_nodes(
+        nodes: &Vec<Node>,
+        parent: Option<&Node>,
+        visitors: &HashMap<NodeType, Visitor>,
+    ) {
+        for node in nodes {
+            traverse_node(&node, parent, visitors);
+        }
+    }
+
+    fn traverse_node(node: &Node, parent: Option<&Node>, visitors: &HashMap<NodeType, Visitor>) {
+        let visitor = visitors.get(&node.get_type());
+
+        if visitor.is_some() {
+            if let Some(ref enter) = visitor.unwrap().enter {
+                enter(&node, parent);
             }
         }
-    };
 
-    traverse_node(node, None);
+        match *node {
+            Node::Program { ref body } => traverse_nodes(body, Some(node), visitors),
+            Node::CallExpression { ref params, .. } => traverse_nodes(params, Some(node), visitors),
+            _ => {} //_ => println!("We can't have an unknown node here!"),
+        }
+
+        if visitor.is_some() {
+            if let Some(ref exit) = visitor.unwrap().exit {
+                exit(&node, parent);
+            }
+        }
+    }
+
+    traverse_node(&node, None, &visitors);
 }
